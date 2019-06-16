@@ -72,13 +72,13 @@ public final class GuildCloner {
         channels.forEach(it -> {
             System.out.println(String.format(deleteFormat, it, dry));
             if (dry) return;
-            it.delete().complete();
+            it.delete().queue();
         });
         emotes.forEach(it -> {
             System.out.println(String.format(deleteFormat, it, dry));
             if (!it.canInteract(targetSelfMember)) return;
             if (dry) return;
-            it.delete().complete();
+            it.delete().queue();
         });
     }
 
@@ -126,7 +126,7 @@ public final class GuildCloner {
                 if (other == null) return;
                 final GuildChannel channel = channelMappings.get(it);
                 if (channel == null) return;
-                channel.putPermissionOverride(other).setAllow(override.getAllowed()).setDeny(override.getDenied()).complete();
+                channel.putPermissionOverride(other).setAllow(override.getAllowed()).setDeny(override.getDenied()).queue();
             });
             it.getRolePermissionOverrides().forEach(override -> {
                 final Role role = override.getRole();
@@ -135,7 +135,7 @@ public final class GuildCloner {
                 if (other == null) return;
                 final GuildChannel otherChannel = channelMappings.get(it);
                 if (otherChannel == null) return;
-                otherChannel.putPermissionOverride(other).setAllow(override.getAllowed()).setDeny(override.getDenied()).complete();
+                otherChannel.putPermissionOverride(other).setAllow(override.getAllowed()).setDeny(override.getDenied()).queue();
             });
         });
         channels.forEach(it -> {
@@ -147,7 +147,7 @@ public final class GuildCloner {
                 children.forEach(child -> {
                     final GuildChannel other = channelMappings.get(child);
                     if (other == null) return;
-                    other.getManager().setParent(newParent).complete();
+                    other.getManager().setParent(newParent).queue();
                 });
             }
         });
