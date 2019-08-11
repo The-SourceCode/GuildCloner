@@ -91,8 +91,7 @@ public final class GuildCloner {
             System.out.println(String.format(copyFormat, it, dry));
             if (dry) return;
             if (it.isManaged()) return;
-            if (it.isPublicRole()) return;
-            if (it == source.getPublicRole()){
+            if (it.isPublicRole()){
                 roleMappings.put(it, target.getPublicRole());
                 return;
             }
@@ -101,8 +100,8 @@ public final class GuildCloner {
                 .setColor(it.getColor())
                 .setHoisted(it.isHoisted())
                 .setMentionable(it.isMentionable())
-                .setName(it.getName())
-                .setPermissions(rawPerms >= Permission.ALL_PERMISSIONS ? Permission.ALL_PERMISSIONS : rawPerms).complete();
+                .setName(it.getName()).complete();
+            newRole.getManager().setPermissions(Math.min(rawPerms, Permission.ALL_PERMISSIONS)).queue();
             roleMappings.put(it, newRole);
         });
         source.getMembers().forEach(it -> {
@@ -126,7 +125,7 @@ public final class GuildCloner {
                 if (other == null) return;
                 final GuildChannel channel = channelMappings.get(it);
                 if (channel == null) return;
-                channel.putPermissionOverride(other).setAllow(override.getAllowed()).setDeny(override.getDenied()).queue();
+                channel.putPermissionOverride(other).setAllow(override.getAllowed()).setDeny(override.getDenied()).complete();
             });
             it.getRolePermissionOverrides().forEach(override -> {
                 final Role role = override.getRole();
@@ -135,7 +134,7 @@ public final class GuildCloner {
                 if (other == null) return;
                 final GuildChannel otherChannel = channelMappings.get(it);
                 if (otherChannel == null) return;
-                otherChannel.putPermissionOverride(other).setAllow(override.getAllowed()).setDeny(override.getDenied()).queue();
+                otherChannel.putPermissionOverride(other).setAllow(override.getAllowed()).setDeny(override.getDenied()).complete();
             });
         });
         channels.forEach(it -> {
